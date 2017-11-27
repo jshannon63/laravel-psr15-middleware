@@ -38,7 +38,7 @@ Which provider or tag's files would you like to publish?:
 ```
 ## Usage
 
-##### Add Psr15Middleware to app/Http/Middleware/Kernel.php
+##### Add one or more of the three available Psr15Middleware classes to app/Http/Middleware/Kernel.php as shown below.
 ```php
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
@@ -48,44 +48,87 @@ Which provider or tag's files would you like to publish?:
         \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\Psr15Middleware::class,
     ];
+    
+    // or if used in a middleware group
+    
+        protected $middlewareGroups = [
+            'web' => [
+                \App\Http\Middleware\EncryptCookies::class,
+                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+                \Illuminate\Session\Middleware\StartSession::class,
+                // \Illuminate\Session\Middleware\AuthenticateSession::class,
+                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+                \App\Http\Middleware\VerifyCsrfToken::class,
+                \Illuminate\Routing\Middleware\SubstituteBindings::class,
+                \App\Http\Middleware\Psr15GroupMiddleware::class,
+
+            ],
+    
+            'api' => [
+                'throttle:60,1',
+                'bindings',
+            ],
+        ];
+        
+    // or if used in routes
+    
+        protected $routeMiddleware = [
+            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+            'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'can' => \Illuminate\Auth\Middleware\Authorize::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'psr15' => \App\Http\Middleware\Psr15RouteMiddleware::class,
+        ];
+
 
 ```
-##### Your PSR-7 middleware callable must have the following signature:
+##### Your PSR-15 compatible middleware must have the following signature:
 ```php
 
+use Interop\Http\Server\RequestHandlerInterface;
+use Interop\Http\Server\MiddlewareInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\RequestInterface;
   
-class exampleMiddleware
+class exampleMiddleware implements MiddlewareInterface
 {
-    public function __invoke(RequestInterface $request, ResponseInterface $response,  callable $next = null){
-        if ($next) {
-            $response = $next($request, $response);
-        }
+    public function __construct()
+    {
+        // if needed
+    }
   
-        // middleware work is done here 
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $response = $handler->handle($request);
+  
+        // process request/response obects here
+        $response->getBody()->write("<h1>PSR-15 Middleware Rocks!</h1>");
   
         return $response;
     }
 }
+
 ```
-##### Add each of your PSR-7 middleware classes to app/Http/Middleware/Psr7Middleware.php
+##### Add each of your PSR-15 middleware classes to the appropriate Psr15Middleware class. Either app/Http/Middleware/Psr15Middleware.php, app/Http/Middleware/Psr15GroupMiddleware.php, app/Http/Middleware/Psr15RouteMiddleware.php
 ```php
 
 namespace App\Http\Middleware;
   
-use Jshannon63\Psr7Middleware\Psr7Middleware as Middleware;
+use Jshannon63\Psr15Middleware\Psr15Middleware as Middleware;
   
-class Psr7Middleware extends Middleware
+class Psr15Middleware extends Middleware
 {
   
     protected $middleware = [
   
-        \Jshannon63\Psr7Middleware\exampleMiddleware::class,
+        \Jshannon63\Psr15Middleware\exampleMiddleware::class,
   
     ];
   
 }
+
 ```
   
 ## Execution Flow
@@ -98,7 +141,7 @@ PSR-7 middleware is executed, a Foundation response object will be returned.
   
 ## Middleware Sources
 
-For some middleware to use, take a look at [Relay.Middleware](https://github.com/relayphp/Relay.Middleware) and [oscarotero/psr7-middlewares](https://github.com/oscarotero/psr7-middlewares).
+For some PSR-15 middleware to use, take a look at [middlewares/psr15middlewares](https://github.com/middlewares/psr15-middlewares).
   
 ## Contributing
 
