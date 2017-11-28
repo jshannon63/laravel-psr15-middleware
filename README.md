@@ -3,16 +3,32 @@
 
 # Use your PSR-15 compliant middleware in Laravel
 
-##### NOTE: A simple PSR-7 only compliant middleware package is available [here](https://github.com/jshannon63/psr7middleware).
+##### NOTE: A simple "PSR-7 Only" compliant middleware package is available [here](https://github.com/jshannon63/psr7middleware).
 
+##### What it does:
+laravel-psr15-middleware (Psr15Middleware) is a Laravel compatible middleware 
+that creates an abstraction between the Foundation objects of Laravel's Middleware 
+stack and the proposed PSR-15 Middleware interface.
+
+##### Why we might need it:
 Laravel uses the Symfony HTTPFoundation Request and Response objects.
-These along with the format of the Laravel middleware stack makes
-it impossible to take advantage of the many useful PSR-15 compliant
-middleware packages that are available.
+These along with the format of the Laravel middleware stack prevents us
+from taking advantage of the many useful PSR-15 middleware packages that 
+are (and hopefully will be) available.
+
+Sometimes it's easier or faster to write your own version of a middleware than
+it is to try and port it from another format. Hopefully, this package will
+make the process even easier.
   
-laravel-psr15-middleware (Psr15Middleware) is a Laravel compatible middleware that creates an abstraction 
-between the Foundation objects of Laravel's Middleware stack and the more widely
-accepted PSR-15 Middleware interface.
+##### PSR implementation reasoning. TL;DR
+This package fully implements the PSR-7 (psr/http-message) message object
+interfaces. It also fully implements the proposed PSR-15 
+(http-interop/http-server-middleware) middleware and (http-interop/http-server-handler) 
+request handler interfaces. However, it does not yet include the proposed PSR-17 
+(http-factory) factory interfaces for creating PSR-7 objects. This is due to the fact
+that we use the Symfony PSR-7 Bridge to make the conversions in both directions
+between HTTPFoundation and PSR-7 message objects. We may find ourselves at a later date
+preparing a http-factory-symfony-bridge implementation of the PSR-17 standard.
 
 
 ## Installation
