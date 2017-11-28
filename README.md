@@ -39,19 +39,25 @@ Which provider or tag's files would you like to publish?:
 ## Usage
 
 ##### Add your PSR-15 compliant middlewares to the /config/psr15middleware.php configuration file.
-1. It is NOT necessary to declare PSR-15 middleware in the app/Http/Middleware/Kernel.php file. Psr15Middleware will automatically register middlewares by pushing them on the various middleware stacks of Laravel.
+1. It is NOT necessary to declare PSR-15 middleware in the app/Http/Middleware/Kernel.php file. 
+Psr15Middleware will automatically register itself and its middlewares by pushing them onto the Laravel 
+middleware stacks.
 2. Config entries can be classnames, callables or objects as shown in the example below.
-3. Additional sections for aliases ($routeMiddleware) and groups ($middlewareGroups) which equate to 
-the special route middleware groups within the app\Http\Middleware\Kernel.php file.
+3. Additional sections for aliases ($routeMiddleware) and groups ($middlewareGroups) which closely
+adheres to the special route middleware groups within the app\Http\Middleware\Kernel.php file.
 4. You can add new groups if you like (i.e., custom as shown).
 ```
 return [
     'middleware' => [
+      
         \Jshannon63\Psr15Middleware\exampleMiddleware::class,
+  
         function() {
             return new \Jshannon63\Psr15Middleware\exampleMiddleware();
          },
-        (new \Jshannon63\Psr15Middleware\exampleMiddleware())
+           
+        (new \Jshannon63\Psr15Middleware\exampleMiddleware()),
+    
     ],
     'groups' => [
        'web' => [
@@ -105,8 +111,8 @@ class exampleMiddleware implements MiddlewareInterface
 Laravel will begin execution of the middelware stack according to the 
 order of definition within the Kernel.php file. Once the middleware dispatcher
 reaches a PSR-15 middleware class, Laravel will be forced to complete all the
-Foudation middlewares before executing the first PSR-7 middleware. Once the final
-PSR-7 middleware is executed, a Foundation response object will be returned.
+Foudation middlewares before executing the first PSR-15 middleware. Once the final
+PSR-15 middleware is executed, a Foundation response object will be returned.
   
 ## Middleware Sources
 
