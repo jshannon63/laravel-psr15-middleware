@@ -2,11 +2,14 @@
 
 namespace Tests;
 
-require_once __DIR__."/../src/Psr15MiddlewreDispatcher.php";
+use Jshannon63\Psr15Middleware\Psr15Middleware;
+
+require_once __DIR__."/../src/Psr15MiddlewareDispatcher.php";
 require_once __DIR__."/../src/Psr15MiddlewareHandler.php";
 
-use Jshannon63\Psr15Middleware\Psr15Middleware as Middleware;
 
+use Illuminate\Config\Repository;
+use Illuminate\Container\Container;
 use Interop\Http\Server\RequestHandlerInterface;
 use Interop\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -52,26 +55,35 @@ class exampleMiddleware3 implements MiddlewareInterface
     }
 }
 
-class Psr15Middleware extends Middleware
-{
-    protected $middleware = [
-
-        \Tests\exampleMiddleware1::class,
-        \Tests\exampleMiddleware2::class,
-        \Tests\exampleMiddleware3::class,
-
-    ];
-}
 
 class Psr15MiddlewareTest extends TestCase
 {
+    protected $middleware;
+    protected $container;
+    protected $config;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->middleware = [
+            'psr15middleware.middleware' => [
+                \Tests\exampleMiddleware1::class,
+                function(){
+                    return new \Tests\exampleMiddleware2();
+                },
+                (new \Tests\exampleMiddleware3())
+            ]
+        ];
+        $this->container = new Container;
+        $this->config = new Repository($this->middleware);
+    }
 
     public function test_middleware_stack(){
 
         $request = Request::create('http://localhost:8888/test/1', 'GET', [], [], [], [], null);
         $response = new Response('Original Content:', Response::HTTP_OK, array('content-type' => 'text/html'));
 
-        $psr15middleware = new Psr15Middleware();
+        $psr15middleware = new Psr15Middleware($this->config,'middleware');
 
         $result = $psr15middleware->handle($request, function() use ($response){
             return $response;

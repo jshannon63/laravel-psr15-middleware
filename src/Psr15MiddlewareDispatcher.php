@@ -19,6 +19,15 @@ class Dispatcher
             $middleware,
             function ($carry, $item) use ($psr7request, $requestHandler) {
                 $requestHandler->set($carry);
+
+                if (is_callable($item)) {
+                    return $item()->process($psr7request, $requestHandler);
+                }
+
+                if (is_object($item)) {
+                    return $item->process($psr7request, $requestHandler);
+                }
+
                 return (new $item)->process($psr7request, $requestHandler);
             },
             $requestHandler->handle($psr7request)

@@ -17,6 +17,8 @@
     },
     "require-dev": {
         "illuminate/http": "^5.5",
+        "illuminate/container": "^5.5",
+        "illuminate/config": "^5.5",
         "mockery/mockery": "~0.9.3",
         "phpunit/phpunit": "~6.0"
     },

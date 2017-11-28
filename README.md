@@ -1,23 +1,23 @@
 
 
 
-# Psr15Middleware - Use your PSR-15 compliant middleware in Laravel
+# Use your PSR-15 compliant middleware in Laravel
 
-##### NOTE: A PSR-7 only compliant version of this package is available.
+##### NOTE: A simple PSR-7 only compliant middleware package is available [here](https://github.com/jshannon63/psr7middleware).
 
 Laravel uses the Symfony HTTPFoundation Request and Response objects.
 These along with the format of the Laravel middleware stack makes
 it impossible to take advantage of the many useful PSR-15 compliant
 middleware packages that are available.
   
-Psr15Middleware is a Laravel compatible middleware that creates an abstraction 
+laravel-psr15-middleware (Psr15Middleware) is a Laravel compatible middleware that creates an abstraction 
 between the Foundation objects of Laravel's Middleware stack and the more widely
 accepted PSR-15 Middleware interface.
 
 
 ## Installation
 ```
-composer require jshannon63/psr15middleware  
+composer require jshannon63/laravel-psr15-middleware  
 ```
 ```
 php artisan vendor:publish
@@ -38,50 +38,38 @@ Which provider or tag's files would you like to publish?:
 ```
 ## Usage
 
-##### Add one or more of the three available Psr15Middleware classes to app/Http/Middleware/Kernel.php as shown below.
-```php
-    protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\TrustProxies::class,
-        \App\Http\Middleware\Psr15Middleware::class,
-    ];
-    
-    // or if used in a middleware group
-    
-        protected $middlewareGroups = [
-            'web' => [
-                \App\Http\Middleware\EncryptCookies::class,
-                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-                \Illuminate\Session\Middleware\StartSession::class,
-                // \Illuminate\Session\Middleware\AuthenticateSession::class,
-                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-                \App\Http\Middleware\VerifyCsrfToken::class,
-                \Illuminate\Routing\Middleware\SubstituteBindings::class,
-                \App\Http\Middleware\Psr15GroupMiddleware::class,
+##### Add your PSR-15 compliant middlewares to the /config/psr15middleware.php configuration file.
+1. It is NOT necessary to declare PSR-15 middleware in the app/Http/Middleware/Kernel.php file. Psr15Middleware will automatically register middlewares by pushing them on the various middleware stacks of Laravel.
+2. Config entries can be classnames, callables or objects as shown in the example below.
+3. Additional sections for aliases ($routeMiddleware) and groups ($middlewareGroups) which equate to 
+the special route middleware groups within the app\Http\Middleware\Kernel.php file.
+4. You can add new groups if you like (i.e., custom as shown).
+```
+return [
+    'middleware' => [
+        \Jshannon63\Psr15Middleware\exampleMiddleware::class,
+        function() {
+            return new \Jshannon63\Psr15Middleware\exampleMiddleware();
+         },
+        (new \Jshannon63\Psr15Middleware\exampleMiddleware())
+    ],
+    'groups' => [
+       'web' => [
+  
 
-            ],
-    
-            'api' => [
-                'throttle:60,1',
-                'bindings',
-            ],
-        ];
-        
-    // or if used in routes
-    
-        protected $routeMiddleware = [
-            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-            'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-            'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            'can' => \Illuminate\Auth\Middleware\Authorize::class,
-            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-            'psr15' => \App\Http\Middleware\Psr15RouteMiddleware::class,
-        ];
+        ],
+        'api' => [
+  
 
+        ],
+        'custom' => [
+  
+        ],
+    ],
+    'aliases' => [
+        'minify' => (new \Middlewares\Minifier('html'))
+    ]
+];
 
 ```
 ##### Your PSR-15 compatible middleware must have the following signature:
@@ -111,31 +99,12 @@ class exampleMiddleware implements MiddlewareInterface
 }
 
 ```
-##### Add each of your PSR-15 middleware classes to the appropriate Psr15Middleware class. Either app/Http/Middleware/Psr15Middleware.php, app/Http/Middleware/Psr15GroupMiddleware.php, app/Http/Middleware/Psr15RouteMiddleware.php
-```php
 
-namespace App\Http\Middleware;
-  
-use Jshannon63\Psr15Middleware\Psr15Middleware as Middleware;
-  
-class Psr15Middleware extends Middleware
-{
-  
-    protected $middleware = [
-  
-        \Jshannon63\Psr15Middleware\exampleMiddleware::class,
-  
-    ];
-  
-}
-
-```
-  
 ## Execution Flow
   
 Laravel will begin execution of the middelware stack according to the 
 order of definition within the Kernel.php file. Once the middleware dispatcher
-reaches the Psr7Middleware class, Laravel will be forced to complete all the
+reaches a PSR-15 middleware class, Laravel will be forced to complete all the
 Foudation middlewares before executing the first PSR-7 middleware. Once the final
 PSR-7 middleware is executed, a Foundation response object will be returned.
   

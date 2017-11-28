@@ -13,20 +13,32 @@ class Psr15MiddlewareServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $middlewaresource = realpath(__DIR__.'/../publish/Psr15Middleware.php');
-        $middlewaredestination = app_path('Http/Middleware/Psr15Middleware.php');
-
-        $groupmiddlewaresource = realpath(__DIR__.'/../publish/Psr15GroupMiddleware.php');
-        $groupmiddlewaredestination = app_path('Http/Middleware/Psr15GroupMiddleware.php');
-
-        $routemiddlewaresource = realpath(__DIR__.'/../publish/Psr15RouteMiddleware.php');
-        $routemiddlewaredestination = app_path('Http/Middleware/Psr15RouteMiddleware.php');
 
         $this->publishes([
-            $middlewaresource => $middlewaredestination,
-            $groupmiddlewaresource => $groupmiddlewaredestination,
-            $routemiddlewaresource => $routemiddlewaredestination,
+            __DIR__.'/../config/psr15middleware.php' => config_path('psr15middleware.php'),
         ]);
+
+        $config = $this->app['config'];
+
+        $this->app->singleton('Psr15Middleware', function () use ($config) {
+            return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'middleware');
+        });
+        $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware('Psr15Middleware');
+
+        foreach ($config->get('psr15middleware.groups') as $key => $group) {
+            $this->app->singleton('Psr15MiddlewareGroup'.title_case($key), function () use ($config, $key) {
+                return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'groups.'.$key);
+            });
+            $this->app['router']->pushMiddlewareToGroup($key, 'Psr15MiddlewareGroup'.title_case($key));
+        }
+
+        foreach ($config->get('psr15middleware.aliases') as $key => $alias) {
+            $this->app->singleton('Psr15MiddlewareAlias'.title_case($key), function () use ($config, $key) {
+                return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'aliases.'.$key);
+            });
+
+            $this->app['router']->aliasMiddleware($key, 'Psr15MiddlewareAlias'.title_case($key));
+        }
     }
 
     /**
