@@ -33,6 +33,22 @@ class Dispatcher
             $requestHandler->handle($psr7request)
         );
 
-        return (new HttpFoundationFactory())->createResponse($psr7response);
+        return $this->convertResponse($psr7response, $response);
+    }
+
+    private function convertResponse($psr7response, $original)
+    {
+        $foundation_response = (new HttpFoundationFactory())->createResponse($psr7response);
+
+        foreach ($foundation_response->headers as $key => $value) {
+            $original->headers->set($key, $value);
+        }
+        $original->setContent($foundation_response->getContent());
+        $original->setProtocolVersion($foundation_response->getProtocolVersion());
+        $original->setStatusCode($foundation_response->getStatusCode());
+        $original->setCharset($foundation_response->getCharset());
+
+        return $original;
     }
 }
+

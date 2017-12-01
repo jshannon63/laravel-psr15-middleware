@@ -25,7 +25,7 @@ class Psr15MiddlewareServiceProvider extends ServiceProvider
                 $this->app->singleton('Psr15Middleware', function () use ($config) {
                     return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'middleware');
                 });
-                $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependMiddleware('Psr15Middleware');
+                $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware('Psr15Middleware');
             }
 
             foreach ($config->get('psr15middleware.groups') as $key => $group) {
@@ -35,7 +35,7 @@ class Psr15MiddlewareServiceProvider extends ServiceProvider
                 $this->app->singleton('Psr15MiddlewareGroup'.title_case($key), function () use ($config, $key) {
                     return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'groups.'.$key);
                 });
-                $this->app['router']->prependMiddlewareToGroup($key, 'Psr15MiddlewareGroup'.title_case($key));
+                $this->app['router']->pushMiddlewareToGroup($key, 'Psr15MiddlewareGroup'.title_case($key));
             }
 
             foreach ($config->get('psr15middleware.aliases') as $key => $alias) {
