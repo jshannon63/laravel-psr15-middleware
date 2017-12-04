@@ -10,8 +10,8 @@ The laravel-psr15-middleware package (a.k.a. Psr15Middleware) is a Laravel
 compatible middleware that creates an abstraction between PSR-7/PSR-15 
 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
   
-Once installed, you will be able to run PSR-15 compatible middlewares within
-the Psr15Middleware's integration in the Laravel middleware stack.
+Once installed, you will be able to run PSR-15 compatible middleware in Laravel
+using this package's integration in the existing middleware stack.
   
 ##### PSR implementation reasoning. TL;DR
 This package fully implements the PSR-7 (psr/http-message) message object interfaces. 
@@ -25,13 +25,13 @@ HTTPFoundation and PSR-7 message objects. I may find myself at a later time prep
 a http-factory-symfony-bridge implementation of the PSR-17 standard.
   
 ## Installation
-Within your Laravel project root folder, install the package using composer. You will not 
+Within your Laravel project folder, install this package using composer. You will not 
 need to register the service provider. Laravel ^5.5 will handle that for you.
-```
+```bash
 composer require jshannon63/laravel-psr15-middleware  
 ```
 Then use artisan to publish the package's configuration assets
-```
+```bash
 php artisan vendor:publish
   
 Which provider or tag's files would you like to publish?:
@@ -48,9 +48,9 @@ Which provider or tag's files would you like to publish?:
  
  choose the Psr15MiddlewareServiceProvider
 ```
-That's it! Now you can setup to run your PSR-15 middleware. The default configuration comes with
-the exampleMiddleware enabled for demonstration purposes. You will need to disable it and add your
-own as described below.
+That's it! Now you can configure and run your PSR-15 middleware. The default configuration comes with
+the exampleMiddleware enabled for demonstration purposes. You will need to disable the examples and 
+add your own middleware classes as described below.
 ## Usage
 
 ##### Add your PSR-15 compliant middlewares to the /config/psr15middleware.php configuration file.
@@ -61,7 +61,7 @@ middleware stacks.
 3. Additional sections for aliases ($routeMiddleware) and groups ($middlewareGroups) which closely
 adheres to the special route middleware groups within the app\Http\Middleware\Kernel.php file.
 4. You can add new groups if you like (i.e., custom as shown).
-```
+```php
 return [
     'middleware' => [
       
