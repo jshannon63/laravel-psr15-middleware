@@ -25,9 +25,14 @@ class exampleMiddleware1 implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
-        $response->getBody()->write("<h1>Test-1</h1>");
+        $response->getBody()->rewind();
+        $body = $response->getBody();
+        $contents = $body->getContents();
+        $contents .= "<h1>Test-1</h1>";
+        $body->rewind();
+        $body->write($contents);
 
-        return $response;
+        return $response->withBody($body);
     }
 }
 
@@ -37,9 +42,14 @@ class exampleMiddleware2 implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
-        $response->getBody()->write("<h1>Test-2</h1>");
+        $response->getBody()->rewind();
+        $body = $response->getBody();
+        $contents = $body->getContents();
+        $contents .= "<h1>Test-2</h1>";
+        $body->rewind();
+        $body->write($contents);
 
-        return $response;
+        return $response->withBody($body);
     }
 }
 
@@ -49,7 +59,24 @@ class exampleMiddleware3 implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
-        $response->getBody()->write("<h1>Test-3</h1>");
+        $response->getBody()->rewind();
+        $body = $response->getBody();
+        $contents = $body->getContents();
+        $contents .= "<h1>Test-3</h1>";
+        $body->rewind();
+        $body->write($contents);
+
+        return $response->withBody($body);
+    }
+}
+
+class exampleMiddleware4 implements MiddlewareInterface
+{
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $response = $handler->handle($request);
+
+        $request->withHeader('X-PHPUNIT-TEST','PASSED');
 
         return $response;
     }
@@ -71,7 +98,8 @@ class Psr15MiddlewareTest extends TestCase
                 function(){
                     return new \Tests\exampleMiddleware2();
                 },
-                (new \Tests\exampleMiddleware3())
+                (new \Tests\exampleMiddleware3()),
+                (new \Tests\exampleMiddleware4())
             ]
         ];
         $this->container = new Container;
@@ -89,10 +117,11 @@ class Psr15MiddlewareTest extends TestCase
             return $response;
         });
 
+        $this->assertContains('Original Content:',$result->getContent());
         $this->assertContains('Test-1',$result->getContent());
         $this->assertContains('Test-2',$result->getContent());
         $this->assertContains('Test-3',$result->getContent());
-        $this->assertContains('<h1>Test-1</h1><h1>Test-2</h1><h1>Test-3</h1>',$result->getContent());
+        $this->assertContains('Original Content:<h1>Test-1</h1><h1>Test-2</h1><h1>Test-3</h1>',$result->getContent());
 
     }
 }

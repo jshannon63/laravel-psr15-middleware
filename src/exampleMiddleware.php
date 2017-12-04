@@ -18,11 +18,18 @@ class exampleMiddleware implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
-        // process request/response obects here
-        $response->getBody()->write("<h1>PSR-15 Middleware Rocks!</h1>");
+        $response->getBody()->rewind();
+        $body = $response->getBody();
+        $contents = $body->getContents();
+        $contents = str_replace(
+            "<body>",
+            "<body>\n\t>PSR-15 Middleware Rocks!</h1>",
+            $contents
+        );
+        $body->rewind();
+        $body->write($contents);
 
-
-        return $response;
+        return $response->withBody($body);
     }
 }
 
