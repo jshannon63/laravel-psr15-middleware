@@ -24,7 +24,7 @@ class Psr15Middleware
     public function handle($request, Closure $next)
     {
         $args = array_slice(func_get_args(), 2);
-        if (count($this->middlewares) === 1 && count($args) > 0) {
+        if (count($this->middleware) === 1 && count($args) > 0) {
             if (gettype($this->middleware[0]) === 'string') {
                 $rCls = new \ReflectionClass($this->middleware[0]);
             } elseif (gettype($this->middleware[0]) === 'object') {
