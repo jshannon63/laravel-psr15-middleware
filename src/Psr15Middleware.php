@@ -23,6 +23,15 @@ class Psr15Middleware
 
     public function handle($request, Closure $next)
     {
+        $args = array_slice(func_get_args(), 2);
+        if (count($this->middlewares) === 1 && count($args) > 0) {
+            if (gettype($this->middleware[0]) === 'string') {
+                $rCls = new \ReflectionClass($this->middleware[0]);
+            } elseif (gettype($this->middleware[0]) === 'object') {
+                $rCls = new \ReflectionClass(get_class($this->middleware[0]));
+            }
+            $this->middleware[0] = $rCls->newInstanceArgs($args);
+        }
         // execute the foundation middleware stack to get the
         // response before running the psr15 middleware stack.
         $response = $next($request);
