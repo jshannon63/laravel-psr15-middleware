@@ -17,18 +17,18 @@ class Dispatcher
 
         $psr7response = array_reduce(
             $middleware,
-            function ($carry, $item) use ($psr7request, $requestHandler) {
-                $requestHandler->set($carry);
+            function ($carry, $item) use ($requestHandler) {
+                $requestHandler->setResponse($carry);
 
                 if (is_callable($item)) {
-                    return $item()->process($psr7request, $requestHandler);
+                    return $item()->process($requestHandler->getRequest(), $requestHandler);
                 }
 
                 if (is_object($item)) {
-                    return $item->process($psr7request, $requestHandler);
+                    return $item->process($requestHandler->getRequest(), $requestHandler);
                 }
 
-                return (new $item)->process($psr7request, $requestHandler);
+                return (new $item)->process($requestHandler->getRequest(), $requestHandler);
             },
             $requestHandler->handle($psr7request)
         );
@@ -51,4 +51,3 @@ class Dispatcher
         return $original;
     }
 }
-

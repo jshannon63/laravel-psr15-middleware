@@ -8,10 +8,10 @@ use Interop\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-
-Class Handler implements RequestHandlerInterface
+class Handler implements RequestHandlerInterface
 {
     protected $response;
+    protected $request;
 
     public function __construct(FoundationResponse $response)
     {
@@ -20,12 +20,17 @@ Class Handler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $this->request = $request;
         return $this->response;
     }
 
-    public function set($response)
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    public function setResponse($response)
     {
         $this->response = $response;
-
     }
 }

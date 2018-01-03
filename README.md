@@ -3,8 +3,6 @@
 
 # Use your PSR-15 compliant middleware in Laravel
 
-##### NOTE: A simple "PSR-7 Only" compliant middleware package is available [here](https://github.com/jshannon63/psr7middleware).
-
 ##### What it does and why:
 The laravel-psr15-middleware package (a.k.a. Psr15Middleware) is a Laravel 
 compatible middleware that creates an abstraction between PSR-7/PSR-15 
