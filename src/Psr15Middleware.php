@@ -16,12 +16,11 @@ class Psr15Middleware
         $this->config = $config;
         $this->middleware = $this->config->get('psr15middleware.'.$middleware);
         if (gettype($this->middleware) != 'array') {
-            $this->middleware = array($this->middleware);
+            $this->middleware = [$this->middleware];
         }
-
     }
 
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, ...$parameters)
     {
         // execute the foundation middleware stack to get the
         // response before running the psr15 middleware stack.
@@ -29,8 +28,6 @@ class Psr15Middleware
 
         $dispatcher = new Dispatcher;
 
-        return $dispatcher($request, $response, $this->middleware);
-
+        return $dispatcher($request, $response, $this->middleware, ...$parameters);
     }
-
 }
