@@ -9,7 +9,7 @@ use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class Dispatcher
 {
-    public function __invoke(FoundationRequest $request, FoundationResponse $response, array $middleware)
+    public function __invoke(FoundationRequest $request, FoundationResponse $response, array $middleware, ...$parameters)
     {
         $psr7request = (new DiactorosFactory())->createRequest($request);
 
@@ -17,7 +17,7 @@ class Dispatcher
 
         $psr7response = array_reduce(
             $middleware,
-            function ($carry, $item) use ($requestHandler) {
+            function ($carry, $item) use ($requestHandler, $parameters) {
                 $requestHandler->setResponse($carry);
 
                 if (is_callable($item)) {
@@ -28,7 +28,7 @@ class Dispatcher
                     return $item->process($requestHandler->getRequest(), $requestHandler);
                 }
 
-                return (new $item)->process($requestHandler->getRequest(), $requestHandler);
+                return (new $item(...$parameters))->process($requestHandler->getRequest(), $requestHandler);
             },
             $requestHandler->handle($psr7request)
         );
