@@ -13,37 +13,42 @@ class Psr15MiddlewareServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         $this->publishes([
             __DIR__.'/../config/psr15middleware.php' => config_path('psr15middleware.php'),
         ]);
 
         $config = $this->app['config'];
 
-        if(count($config->get('psr15middleware.middleware'))){
-            if($config->get('psr15middleware')) {
-                $this->app->singleton('Psr15Middleware', function () use ($config) {
-                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'middleware');
+        if ($config->get('psr15middleware')) {
+            foreach ($config->get('psr15middleware.middleware') as $key => $middleware) {
+                $this->app->singleton('psr15.middleware.'.$key, function () use ($middleware) {
+                    return new Psr15Middleware($middleware[0], $middleware[2]);
                 });
-                $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware('Psr15Middleware');
-            }
-
-            foreach ($config->get('psr15middleware.groups') as $key => $group) {
-                if(!count($group)){
-                    continue;
+                if ($middleware[1] == 'prepend') {
+                    $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependMiddleware('psr15.middleware.'.$key);
+                } else {
+                    $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware('psr15.middleware.'.$key);
                 }
-                $this->app->singleton('Psr15MiddlewareGroup'.title_case($key), function () use ($config, $key) {
-                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'groups.'.$key);
-                });
-                $this->app['router']->pushMiddlewareToGroup($key, 'Psr15MiddlewareGroup'.title_case($key));
             }
-
-            foreach ($config->get('psr15middleware.aliases') as $key => $alias) {
-                $this->app->singleton('Psr15MiddlewareAlias'.title_case($key), function () use ($config, $key) {
-                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'aliases.'.$key);
-                });
-                $this->app['router']->aliasMiddleware($key, 'Psr15MiddlewareAlias'.title_case($key));
+            foreach ($config->get('psr15middleware.groups') as $groupkey => $group) {
+                foreach ($config->get('psr15middleware.groups.'.$groupkey) as $key => $middleware) {
+                    $this->app->bind('psr15.group.'.strtolower($groupkey).'.'.$key, function () use ($middleware) {
+                        return new Psr15Middleware($middleware[0], $middleware[2]);
+                    });
+                    if ($middleware[1] == 'prepend') {
+                        $this->app['router']->prependMiddlewareToGroup($groupkey, 'psr15.group.'.strtolower($groupkey).'.'.$key);
+                    } else {
+                        $this->app['router']->pushMiddlewareToGroup($groupkey, 'psr15.group.'.strtolower($groupkey).'.'.$key);
+                    }
+                }
             }
+            foreach ($config->get('psr15middleware.aliases') as $key => $middleware) {
+                $this->app->bind('psr15.alias.'.strtolower($key), function () use ($middleware) {
+                    return new Psr15Middleware($middleware[0], $middleware[2]);
+                });
+                $this->app['router']->aliasMiddleware($key, 'psr15.alias.'.strtolower($key));
+            }
+            // dd($this);
         }
     }
 
