@@ -72,9 +72,9 @@ class exampleMiddleware4 implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $response = $handler->handle($request);
-
         $request->withHeader('X-PHPUNIT-TEST', 'PASSED');
+
+        $response = $handler->handle($request);
 
         return $response;
     }
