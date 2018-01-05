@@ -13,34 +13,32 @@ class Psr15MiddlewareServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         $this->publishes([
             __DIR__.'/../config/psr15middleware.php' => config_path('psr15middleware.php'),
         ]);
 
         $config = $this->app['config'];
 
-        if(count($config->get('psr15middleware.middleware'))){
-            if($config->get('psr15middleware')) {
-                $this->app->singleton('Psr15Middleware', function () use ($config) {
-                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'middleware');
+        if ($config->get('psr15middleware')) {
+            foreach ($config->get('psr15middleware.middleware') as $key => $middleware) {
+                $this->app->singleton('Psr15MiddlewareMiddleware'.$key, function () use ($middleware) {
+                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($middleware[0], $middleware[1]);
                 });
-                $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware('Psr15Middleware');
-            }
+                dd($this->app['Psr15MiddlewareMiddleware'.$key]);
 
-            foreach ($config->get('psr15middleware.groups') as $key => $group) {
-                if(!count($group)){
-                    continue;
+                $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware('Psr15MiddlewareMiddleware'.$key);
+            }
+            foreach ($config->get('psr15middleware.groups') as $groupkey => $group) {
+                foreach ($config->get('psr15middleware.groups.'.$groupkey) as $key => $middleware) {
+                    $this->app->bind('Psr15MiddlewareGroup'.title_case($groupkey).$key, function () use ($middleware) {
+                        return new Psr15Middleware($middleware[0], $middleware[1]);
+                    });
+                    $this->app['router']->pushMiddlewareToGroup($groupkey, 'Psr15MiddlewareGroup'.title_case($groupkey).$key);
                 }
-                $this->app->singleton('Psr15MiddlewareGroup'.title_case($key), function () use ($config, $key) {
-                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'groups.'.$key);
-                });
-                $this->app['router']->pushMiddlewareToGroup($key, 'Psr15MiddlewareGroup'.title_case($key));
             }
-
-            foreach ($config->get('psr15middleware.aliases') as $key => $alias) {
-                $this->app->singleton('Psr15MiddlewareAlias'.title_case($key), function () use ($config, $key) {
-                    return new \Jshannon63\Psr15Middleware\Psr15Middleware($config, 'aliases.'.$key);
+            foreach ($config->get('psr15middleware.aliases') as $key => $middleware) {
+                $this->app->bind('Psr15MiddlewareAlias'.title_case($key), function () use ($middleware) {
+                    return new Psr15Middleware($middleware[0], $middleware[1]);
                 });
                 $this->app['router']->aliasMiddleware($key, 'Psr15MiddlewareAlias'.title_case($key));
             }

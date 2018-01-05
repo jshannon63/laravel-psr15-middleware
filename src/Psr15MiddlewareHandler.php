@@ -33,4 +33,9 @@ class Handler implements RequestHandlerInterface
     {
         $this->response = $response;
     }
+
+    public function getResponse()
+    {
+        return $this->response;
+    }
 }

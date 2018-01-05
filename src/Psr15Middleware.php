@@ -3,34 +3,39 @@
 namespace Jshannon63\Psr15Middleware;
 
 use Closure;
-use Illuminate\Contracts\Config\Repository;
 
 class Psr15Middleware
 {
     protected $middleware;
+    protected $mode;
 
-    protected $config;
-
-    public function __construct(Repository $config, string $middleware = 'middleware')
+    public function __construct($middleware, $mode = 'before')
     {
-        $this->config = $config;
-        $this->middleware = $this->config->get('psr15middleware.'.$middleware);
-        if (gettype($this->middleware) != 'array') {
-            $this->middleware = array($this->middleware);
-        }
-
+        $this->middleware = $middleware;
     }
 
     public function handle($request, Closure $next)
     {
-        // execute the foundation middleware stack to get the
-        // response before running the psr15 middleware stack.
-        $response = $next($request);
-
         $dispatcher = new Dispatcher;
 
-        return $dispatcher($request, $response, $this->middleware);
-
+        if ($this->mode == 'before') {
+            // we create a throw-away response object since PSR-15 requires it but it is not
+            // truly available at this point in the request cycle.
+            $dispatcher($request, (new \Symfony\Component\HttpFoundation\Response), $this->middleware);
+            return $next($request);
+        } elseif ($this->mode == 'after') {
+            $response = $next($request);
+            return $dispatcher($request, $response, $this->middleware);
+        } else {
+            return $next($request);
+        }
     }
 
+    public function terminate($request, $response)
+    {
+        if ($this->mode == 'terminable') {
+            $dispatcher = new Dispatcher;
+            $dispatcher($request, $response, $this->middleware);
+        }
+    }
 }
