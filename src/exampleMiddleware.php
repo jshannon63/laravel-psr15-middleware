@@ -9,11 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class exampleMiddleware implements MiddlewareInterface
 {
-    protected $message;
-
-    public function __construct($parm1 = 'Hello', $parm2 = 'World')
+    public function __construct()
     {
-        $this->message = $parm1.' '.$parm2;
+        // if needed
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -22,19 +20,20 @@ class exampleMiddleware implements MiddlewareInterface
 
         /**** Your middleware functionality begins here ****/
 
-        $response->getBody()->rewind();
-        $body = $response->getBody();
-        $contents = $body->getContents();
-        $contents = str_replace(
-                '<body>',
-                "<body>\n\t<h1>".$this->message.'</h1>',
+            $response->getBody()->rewind();
+            $body = $response->getBody();
+            $contents = $body->getContents();
+            $contents = str_replace(
+                "<body>",
+                "<body>\n\t<h1>PSR-15 Middleware Rocks!</h1>",
                 $contents
             );
-        $body->rewind();
-        $body->write($contents);
+            $body->rewind();
+            $body->write($contents);
 
         /**** and ends here ****/
 
         return $response->withBody($body);
     }
 }
+

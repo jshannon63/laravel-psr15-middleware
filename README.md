@@ -3,7 +3,7 @@
 
 # Use your PSR-15 compliant middleware in Laravel
 
-#### What it does and why:
+##### What it does and why:
 The laravel-psr15-middleware package (a.k.a. Psr15Middleware) is a Laravel 
 compatible middleware that creates an abstraction between PSR-7/PSR-15 
 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
@@ -11,7 +11,7 @@ interfaces and Laravel's middleware stack and Foundation HTTP message objects.
 Once installed, you will be able to run PSR-15 compatible middleware in Laravel
 using this package's integration in the existing middleware stack.
   
-#### PSR implementation reasoning. TL;DR
+##### PSR implementation reasoning. TL;DR
 This package fully implements the PSR-7 (psr/http-message) message object interfaces. 
 The interface is realized through Zend Diactoros concrete implementations of both the 
 Request and Response objects. It also fully implements the proposed PSR-15 
@@ -51,14 +51,13 @@ the exampleMiddleware enabled for demonstration purposes. You will need to disab
 add your own middleware classes as described below.
 ## Usage
 
-#### Add your PSR-15 compliant middlewares to the /config/psr15middleware.php configuration file.
+##### Add your PSR-15 compliant middlewares to the /config/psr15middleware.php configuration file.
 1. It is NOT necessary to declare PSR-15 middleware in the app/Http/Middleware/Kernel.php file. 
 Psr15Middleware will automatically register itself and its middlewares by pushing them onto the Laravel 
 middleware stacks.
 2. Config entries can be classnames, callables or objects as shown in the example below.
 3. Additional sections for aliases ($routeMiddleware) and groups ($middlewareGroups) which closely
-adheres to the special route middleware groups within the app\Http\Middleware\Kernel.php file. In 
-other words... keep registering your middleware in the same manner, just do it in a new file.
+adheres to the special route middleware groups within the app\Http\Middleware\Kernel.php file.
 4. You can add new groups if you like (i.e., custom as shown).
 ```php
 return [
@@ -92,7 +91,7 @@ return [
 ];
 
 ```
-Your PSR-15 compatible middleware must have the following signature:
+##### Your PSR-15 compatible middleware must have the following signature:
 ```php
 
 use Interop\Http\Server\RequestHandlerInterface;
@@ -102,9 +101,9 @@ use Psr\Http\Message\ResponseInterface;
   
 class exampleMiddleware implements MiddlewareInterface
 {
-    public function __construct($parameter = null)
+    public function __construct()
     {
-        // if needed use contructor injection of your parameters
+        // if needed
     }
   
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -132,29 +131,22 @@ class exampleMiddleware implements MiddlewareInterface
 }
 
 ```
-You can also pass parameters from your routes to the constructor of a PSR-15 middleware in routes/web.php
-```php
-Route::put('post/{id}', function ($id) {
-    // 
-})->middleware('role:editor');
-```
 
 ## Execution Flow
   
-All PSR-15 middleware is run entirely within a PSR15Middleware encapsulation. The two 
+All PSR-15 middleware is run entirely within the PSR15Middleware subsystem. The two 
 stacks are run separately and sequentially (Laravel then PSR-15). Laravel will begin 
 execution of the middelware stack according to the order of definition within the 
 Kernel.php file. Once the Laravel's middleware dispatcher reaches the Psr15Middleware 
-class, Laravel will complete all the Foudation middlewares before executing the first 
-PSR-15 middleware. Once the final PSR-15 middleware is executed, a Foundation response 
-object will be returned to the Laravel middleware dispatcher.
+class, Laravel will be forced to complete all the Foudation middlewares before 
+executing the first PSR-15 middleware. Once the final PSR-15 middleware is executed, 
+a Foundation response object will be returned to the Laravel middleware dispatcher.
   
-Please note that the PSR-7 Message objects are immutable. Modification to these objects
-should force new object creation. Psr15Middleware is designed to work with cloned/converted I
-lluminate Response/Request objects. A proper clone of the modified Foudnation Response object 
-is returned to to the Laravel middleware system at the completion of the stack execution. 
-Also be aware that PSR-15 middlewares will not have access to Laravel/Symfony specific 
-properties and methods on the Foundation message objects.
+Please note that the PSR-7 Message objects are immutable. Psr15Middleware will work
+with cloned/converted Illuminate Response/Request objects. The updated clone of the 
+Response object is returned to to the Laravel middleware system at the completion of 
+the stack execution. This also means that PSR-15 middlewares will not have access to 
+Laravel/Symfony specific properties and methods on the Foundation message objects.
   
 ## Middleware Sources
 
