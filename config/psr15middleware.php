@@ -1,7 +1,7 @@
 <?php
 return [
     'middleware' => [
-        [\Jshannon63\Psr15Middleware\exampleMiddleware::class, 'after'],
+        [\Jshannon63\Psr15Middleware\exampleMiddleware::class, 'prepend', 'after'],
     ],
     'groups' => [
         'web' => [

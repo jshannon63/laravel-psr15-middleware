@@ -91,12 +91,12 @@ class Psr15MiddlewareTest extends TestCase
         parent::setUp();
         $this->middleware = [
             'psr15middleware.middleware' => [
-                [\Tests\exampleMiddleware1::class, 'after'],
+                [\Tests\exampleMiddleware1::class, 'append', 'after'],
                 [function () {
                     return new \Tests\exampleMiddleware2();
-                }, 'after'],
-                [(new \Tests\exampleMiddleware3()), 'after'],
-                [(new \Tests\exampleMiddleware4()), 'after']
+                }, 'append', 'after'],
+                [(new \Tests\exampleMiddleware3()), 'append', 'after'],
+                [(new \Tests\exampleMiddleware4()), 'append', 'after']
             ]
         ];
         $this->container = new Container;
@@ -108,16 +108,19 @@ class Psr15MiddlewareTest extends TestCase
         $request = Request::create('http://localhost:8888/test/1', 'GET', [], [], [], [], null);
         $response = new Response('Original Content:', Response::HTTP_OK, ['content-type' => 'text/html']);
 
-        $psr15middleware = new Psr15Middleware($this->config, 'middleware');
+        $middlewares = $this->config->get('psr15middleware.middleware');
 
-        $result = $psr15middleware->handle($request, function () use ($response) {
-            return $response;
-        });
+        foreach ($middlewares as $middleware) {
+            $psr15middleware = new Psr15Middleware($middleware[0], $middleware[2]);
+            $response = $psr15middleware->handle($request, function () use ($response) {
+                return $response;
+            });
+        }
 
-        $this->assertContains('Original Content:', $result->getContent());
-        $this->assertContains('Test-1', $result->getContent());
-        $this->assertContains('Test-2', $result->getContent());
-        $this->assertContains('Test-3', $result->getContent());
-        $this->assertContains('Original Content:<h1>Test-1</h1><h1>Test-2</h1><h1>Test-3</h1>', $result->getContent());
+        $this->assertContains('Original Content:', $response->getContent());
+        $this->assertContains('Test-1', $response->getContent());
+        $this->assertContains('Test-2', $response->getContent());
+        $this->assertContains('Test-3', $response->getContent());
+        $this->assertContains('Original Content:<h1>Test-1</h1><h1>Test-2</h1><h1>Test-3</h1>', $response->getContent());
     }
 }

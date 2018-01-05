@@ -21,6 +21,8 @@ class exampleMiddleware implements MiddlewareInterface
         // process any request manipulations here before the handler.
         // remember that only "before" middlewares have access to
         // the request object before the application acts on it.
+        // the handler will ensure the next middleware will see any
+        // changes to the request object.
 
         $response = $handler->handle($request);
 
