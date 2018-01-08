@@ -11,7 +11,7 @@ The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compa
 Once installed, you will be able to run compliant PSR-15 middleware in Laravel using this package's integration in the existing middleware stack.
   
 #### PSR implementation reasoning. TL;DR
-This package fully implements the PSR-7 (psr/http-message) message object interfaces. The interface is realized through Zend Diactoros concrete implementations of both the Request and Response objects. It also fully implements the proposed PSR-15 (http-interop/http-server-middleware) middleware and (http-interop/http-server-handler) request handler interfaces. However, it does not yet include the proposed PSR-17 (http-factory) factory interfaces for creating PSR-7 objects. This is due to the fact that we use the Symfony PSR-7 Bridge to make the conversions in both directions between HTTPFoundation and PSR-7 message objects.
+This package fully implements the PSR-7 (psr/http-message) message object interfaces. The interface is realized through Zend Diactoros concrete implementations of both the Request and Response objects. It also fully implements the proposed PSR-15 (http-interop/http-server-middleware) middleware and (http-interop/http-server-handler) request handler interfaces. However, it does not yet include the proposed PSR-17 (http-factory) factory interfaces for creating PSR-7 objects. This is due to the fact that we use the Symfony PSR-7 Bridge to make the conversions in both directions between Foundation and PSR-7 message objects.
   
 ## Installation
 Within your Laravel project folder, install this package using composer. If you are using Laravel 5.5 or later, service provider registration will happen automatically.
@@ -144,8 +144,6 @@ class exampleMiddleware implements MiddlewareInterface
 ## Execution Flow
   
 All PSR-15 middleware is encapsulated and managed entirely by the PSR15Middleware subsystem. On boot, Psr15Middleware will bind a wrapper object for each PSR-15 middleware to make it appear native to Laravel. Then the objects will be placed into the Laravel middleware stack according to your configuration parameters. The middlewares themselves will only be instanitated as needed. Laravel will execute the middelwares according to the system priorites and as modified during registration of PSR-15 middlewares by Psr15Middleware.
-  
-Please note that PSR-7 Message objects are considered immutable, and we treat the Foundation message objects with the same respect. Psr15Middleware will work with cloned/converted Illuminate Response/Request objects while processing PSR-15 middlewares. This means that at every PSR-15 middleware, there will be new request and response objects regardless of whether or not they have changed by a middleware.
   
 Also, keep in mind, that since Psr15Middlware operates on PSR-7 message objects, PSR-15 middlewares will not have access to Laravel/Symfony specific properties and methods of the Foundation message objects.
   

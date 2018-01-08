@@ -31,26 +31,17 @@ class Dispatcher
 
     private function convertRequest($psr7request, $original)
     {
-        $clone = clone $original;
-
         $foundation_request = (new HttpFoundationFactory())->createRequest($psr7request);
 
-        $clone->attributes = $foundation_request->attributes;
-        $clone->request = $foundation_request->request;
-        $clone->server = $foundation_request->server;
-        $clone->query = $foundation_request->query;
-        $clone->files = $foundation_request->files;
-        $clone->cookies = $foundation_request->cookies;
-        $clone->headers = $foundation_request->headers;
+        $original->query = clone $foundation_request->query;
+        $original->request = clone $foundation_request->request;
+        $original->attributes = clone $foundation_request->attributes;
+        $original->cookies = clone $foundation_request->cookies;
+        $original->files = clone $foundation_request->files;
+        $original->server = clone $foundation_request->server;
+        $original->headers = clone $foundation_request->headers;
 
-        $clone->setRequestFormat($foundation_request->getRequestFormat());
-        $clone->setDefaultLocale($foundation_request->getDefaultLocale());
-        $clone->setLocale($foundation_request->getLocale());
-        if ($foundation_request->hasSession()) {
-            $clone->setSession($foundation_request->getSession());
-        }
-
-        return $clone;
+        return $original;
     }
 
     private function convertResponse($psr7response, $original)
