@@ -15,6 +15,14 @@ class Psr15Middleware
         $this->mode = $mode;
     }
 
+    /**
+     * Laravel compatible middleware handle method
+     *
+     * @param [type] $request
+     * @param Closure $next
+     * @param [type] ...$parameters
+     * @return void
+     */
     public function handle($request, Closure $next, ...$parameters)
     {
         $dispatcher = new Dispatcher;
@@ -34,6 +42,14 @@ class Psr15Middleware
         }
     }
 
+    /**
+     * for terminable middlewares
+     *
+     * @param [type] $request
+     * @param [type] $response
+     * @param [type] ...$parameters
+     * @return void
+     */
     public function terminate($request, $response, ...$parameters)
     {
         if ($this->mode == 'terminable') {

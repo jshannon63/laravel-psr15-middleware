@@ -2,8 +2,8 @@
 
 namespace Jshannon63\Psr15Middleware;
 
-use Interop\Http\Server\RequestHandlerInterface;
-use Interop\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,6 +16,13 @@ class exampleMiddleware implements MiddlewareInterface
         $this->message = $parm1.' '.$parm2;
     }
 
+    /**
+     * PSR-15 compatible middleware process method
+     *
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // process any request manipulations here before the handler.

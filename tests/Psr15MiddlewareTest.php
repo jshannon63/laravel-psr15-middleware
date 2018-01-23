@@ -9,8 +9,8 @@ require_once __DIR__.'/../src/Psr15MiddlewareHandler.php';
 
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
-use Interop\Http\Server\RequestHandlerInterface;
-use Interop\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use PHPUnit\Framework\TestCase;

@@ -4,14 +4,16 @@
 # Use your PSR-15 compliant middleware in Laravel
 
 #### What it does and why:
-PHP-FIG standards related to the HHTP Message Interface, HTTP Middlewares and HTTP Factories are being actively developed. PSR-7 is here... and PSR-15 will be soon (if not already by the time you read this) and PSR-17 is on the horizon.
+PHP-FIG standards related to the HHTP Message Interface (PSR-7) have been approved for about 2 years now. The standard for HTTP Middlewares (PSR-15) is approved as of Jan 22, 2018. A proposal related to HTTP Message Factories (PSR-17) is being actively developed.
+
+I am a firm believer that middlewares are a simple thing and should be thin and easily managed/created, I also believe that there is a great deal of value in re-usable web components that can be shared between frameworks which adhere to PSR standards. Many PSR-15 middleware components already exist in the PHP community and having them available to use in Laravel is a definite benefit.
   
 The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compatible middleware that creates an abstraction between PSR-7/PSR-15 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
   
-Once installed, you will be able to run compliant PSR-15 middleware in Laravel using this package's integration in the existing middleware stack.
+Once installed, you will be able to run compliant PSR-15 middleware in Laravel using this package's integration in the existing Laravel middleware stack.
   
 #### PSR implementation reasoning. TL;DR
-This package fully implements the PSR-7 (psr/http-message) message object interfaces. The interface is realized through Zend Diactoros concrete implementations of both the Request and Response objects. It also fully implements the proposed PSR-15 (http-interop/http-server-middleware) middleware and (http-interop/http-server-handler) request handler interfaces. However, it does not yet include the proposed PSR-17 (http-factory) factory interfaces for creating PSR-7 objects. This is due to the fact that we use the Symfony PSR-7 Bridge to make the conversions in both directions between Foundation and PSR-7 message objects.
+This package fully implements the PSR-7 (psr/http-message) message object interfaces. The interface is realized through Zend Diactoros concrete implementations of both the Request and Response objects. It also fully implements the proposed PSR-15 (psr/http-server-middleware) middleware and (psr/http-server-handler) request handler interfaces. However, it does not yet include the proposed PSR-17 (http-factory) factory interfaces for creating PSR-7 objects. This is due to the fact that we use the Symfony PSR-7 Bridge to make the conversions in both directions between Foundation and PSR-7 message objects.
   
 ## Installation
 Within your Laravel project folder, install this package using composer. If you are using Laravel 5.5 or later, service provider registration will happen automatically.
@@ -40,7 +42,7 @@ That's it! Now you can configure and run your PSR-15 middleware. The default con
 ## Usage
 
 #### Add your PSR-15 compliant middlewares to the /config/psr15middleware.php configuration file.
-1. It is NOT necessary to declare PSR-15 middleware in the `app/Http/Middleware/Kernel.php` file. Psr15Middleware will automatically register itself and its middlewares by pushing them onto the Laravel middleware stack.
+1. It is NOT necessary to declare PSR-15 middleware in the `app/Http/Middleware/Kernel.php` file as is normally done. Psr15Middleware will automatically register itself and its middlewares by pushing them onto the Laravel middleware stack.
 2. Config entries are arrays and can can contain classnames, callables or objects as shown in the example below. Each entry has two additional parameters which follow the middleware declaration:
     * "prepend" or "append" will determine if your midleware will be placed at
     the head or tail of the middleware stack.

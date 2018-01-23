@@ -4,7 +4,7 @@ namespace Jshannon63\Psr15Middleware;
 
 use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
-use Interop\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

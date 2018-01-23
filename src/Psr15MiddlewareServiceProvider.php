@@ -48,7 +48,6 @@ class Psr15MiddlewareServiceProvider extends ServiceProvider
                 });
                 $this->app['router']->aliasMiddleware($key, 'psr15.alias.'.strtolower($key));
             }
-            // dd($this);
         }
     }
 

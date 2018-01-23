@@ -46,18 +46,17 @@ class Dispatcher
 
     private function convertResponse($psr7response, $original)
     {
-        $clone = clone $original;
-
         $foundation_response = (new HttpFoundationFactory())->createResponse($psr7response);
 
         foreach ($foundation_response->headers as $key => $value) {
-            $clone->headers->set($key, $value);
+            $original->headers->set($key, $value);
         }
-        $clone->setContent($foundation_response->getContent());
-        $clone->setProtocolVersion($foundation_response->getProtocolVersion());
-        $clone->setStatusCode($foundation_response->getStatusCode());
-        $clone->setCharset($foundation_response->getCharset());
 
-        return $clone;
+        $original->setContent($foundation_response->getContent());
+        $original->setProtocolVersion($foundation_response->getProtocolVersion());
+        $original->setStatusCode($foundation_response->getStatusCode());
+        $original->setCharset($foundation_response->getCharset());
+
+        return $original;
     }
 }
