@@ -4,11 +4,13 @@
 # Use your PSR-15 compliant middleware in Laravel
 
 #### What it does and why:
-PHP-FIG standards related to the HHTP Message Interface (PSR-7) have been approved for about 2 years now. The standard for HTTP Middlewares (PSR-15) is approved as of Jan 22, 2018. A proposal related to HTTP Message Factories (PSR-17) is being actively developed.
+PHP-FIG standards related to the HHTP Message Interface (PSR-7) have been in place for some time now. The standard for HTTP Handlers (PSR-15) is approved as of Jan 22, 2018. A proposal related to HTTP Message Factories (PSR-17) is being actively developed.
 
-I am a firm believer that middlewares are a simple thing and should be thin and easily managed/created, I also believe that there is a great deal of value in re-usable web components that can be shared between frameworks which adhere to PSR standards. Many PSR-15 middleware components already exist in the PHP community and having them available to use in Laravel is a definite benefit.
+Laravel already provides a pathway for obtaining PSR-7 request objects from route closures or controller methods. Laravel also allows returning PSR-7 response objects from a route or controller. However, having a new PSR related to middleware doesn't necessarily mean that Laravel is going to implement a compliant middleware stack. Using a bridge (like this package) is a perfectly acceptable way to adopt PSR-15 standards within Laravel without completely changing the underlying structure of the existing framework. 
+
+I acknowledge that middlewares are a simple thing and should be thin and easily managed/created, I also believe that there is a great deal of value in re-usable web components that can be shared between frameworks which adhere to PSR standards. Many PSR-15 middleware components already exist in the PHP community and having them available to use in Laravel can be a definite benefit. That is why this package was created.
   
-The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compatible middleware that creates an abstraction between PSR-7/PSR-15 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
+The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compatible middleware that creates an abstraction (or bridge) between PSR-7/PSR-15 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
   
 Once installed, you will be able to run compliant PSR-15 middleware in Laravel using this package's integration in the existing Laravel middleware stack.
   
