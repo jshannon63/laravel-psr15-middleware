@@ -7,7 +7,7 @@ Laravel already provides a pathway for obtaining PSR-7 request objects from rout
 
 Middleware is a simple thing and for the most part, middleware should be thin and are easily written. In fact, many are nothing more than single line libraries that could be just as easily created as imported. However, there is some value in re-usable web components that can be shared between applications/frameworks. Many PSR-15 middleware components already exist in the PHP community, some of which can provide some value. Having them available to use in Laravel could be a benefit.
 
-For whatever benefit may be gained out of re-usable middleware logic, however small... this library was created. 
+For what benefit may be gained out of re-usable middleware logic, however small... this library was created. 
   
 The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compatible middleware that creates a bridge between PSR-7/PSR-15 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
   
@@ -98,8 +98,8 @@ return [
 
 // your namespace here
 
-use Interop\Http\Server\RequestHandlerInterface;
-use Interop\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
