@@ -1,21 +1,20 @@
-
-
-
-# Use your PSR-15 compliant middleware in Laravel
+# Use PSR-15 compliant middleware in Laravel
 
 #### What it does and why:
-PHP-FIG standards related to the HHTP Message Interface (PSR-7) have been in place for some time now. The standard for HTTP Handlers (PSR-15) is approved as of Jan 22, 2018. A proposal related to HTTP Message Factories (PSR-17) is being actively developed.
+PHP-FIG standards related to the HHTP Message Interface (PSR-7) have been in place for some time now. The standard for HTTP Handlers (PSR-15) is approved as of Jan 22, 2018.
 
-Laravel already provides a pathway for obtaining PSR-7 request objects from route closures or controller methods. Laravel also allows returning PSR-7 response objects from a route or controller. However, having a new PSR related to middleware doesn't necessarily mean that Laravel is going to implement a compliant middleware stack. Using a bridge (like this package) is a perfectly acceptable way to adopt PSR-15 standards within Laravel without completely changing the underlying structure of the existing framework. 
+Laravel already provides a pathway for obtaining PSR-7 request objects from route closures or controller methods. Laravel also allows returning PSR-7 response objects from a route or controller. However, having a new PSR related to middleware doesn't necessarily mean that Laravel needs to implement a compliant middleware stack... nor should it. Using a bridge (like this library) is a perfectly acceptable way to adopt PSR-15 capabilities within Laravel without completely changing the underlying framework. 
 
-I acknowledge that middlewares are a simple thing and should be thin and easily managed/created, I also believe that there is a great deal of value in re-usable web components that can be shared between frameworks which adhere to PSR standards. Many PSR-15 middleware components already exist in the PHP community and having them available to use in Laravel can be a definite benefit. That is why this package was created.
+Middleware is a simple thing and for the most part, middleware should be thin and are easily written. In fact, many are nothing more than single line libraries that could be just as easily created as imported. However, there is some value in re-usable web components that can be shared between applications/frameworks. Many PSR-15 middleware components already exist in the PHP community, some of which can provide some value. Having them available to use in Laravel could be a benefit.
+
+For whatever benefit may be gained out of re-usable middleware logic, however small... this library was created. 
   
-The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compatible middleware that creates an abstraction (or bridge) between PSR-7/PSR-15 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
+The laravel-psr15-middleware library (a.k.a. Psr15Middleware) is a Laravel compatible middleware that creates a bridge between PSR-7/PSR-15 interfaces and Laravel's middleware stack and Foundation HTTP message objects.
   
 Once installed, you will be able to run compliant PSR-15 middleware in Laravel using this package's integration in the existing Laravel middleware stack.
   
 #### PSR implementation reasoning. TL;DR
-This package fully implements the PSR-7 (psr/http-message) message object interfaces. The interface is realized through Zend Diactoros concrete implementations of both the Request and Response objects. It also fully implements the proposed PSR-15 (psr/http-server-middleware) middleware and (psr/http-server-handler) request handler interfaces. However, it does not yet include the proposed PSR-17 (http-factory) factory interfaces for creating PSR-7 objects. This is due to the fact that we use the Symfony PSR-7 Bridge to make the conversions in both directions between Foundation and PSR-7 message objects.
+This library fully implements the PSR-7 (psr/http-message) message object interfaces. The interface is realized through Zend Diactoros concrete implementations of both the Request and Response objects. It also fully implements the newly approved PSR-15 (psr/http-server-middleware) middleware and (psr/http-server-handler) request handler interfaces. This library uses the Symfony PSR-7 Bridge to make the conversions in both directions between Foundation and PSR-7 message objects.
   
 ## Installation
 Within your Laravel project folder, install this package using composer. If you are using Laravel 5.5 or later, service provider registration will happen automatically.
