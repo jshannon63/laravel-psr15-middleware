@@ -55,7 +55,7 @@ class Dispatcher
         $original->setContent($foundation_response->getContent());
         $original->setProtocolVersion($foundation_response->getProtocolVersion());
         $original->setStatusCode($foundation_response->getStatusCode());
-        $original->setCharset($foundation_response->getCharset());
+        $original->setCharset($foundation_response->getCharset()?$foundation_response->getCharset():'');
 
         return $original;
     }
