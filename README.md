@@ -1,7 +1,7 @@
 # Use PSR-15 compliant middleware in Laravel
 
 #### What it does and why:
-PHP-FIG standards related to the HHTP Message Interface (PSR-7) have been in place for some time now. The standard for HTTP Handlers (PSR-15) is approved as of Jan 22, 2018.
+PHP-FIG standards related to the HTTP Message Interface (PSR-7) have been in place for some time now. The standard for HTTP Handlers (PSR-15) is approved as of Jan 22, 2018.
 
 Laravel already provides a pathway for obtaining PSR-7 request objects from route closures or controller methods. Laravel also allows returning PSR-7 response objects from a route or controller. However, having a new PSR related to middleware doesn't necessarily mean that Laravel needs to implement a compliant middleware stack... nor should it. Using a bridge (like this library) is a perfectly acceptable way to adopt PSR-15 capabilities within Laravel without completely changing the underlying framework. 
 
