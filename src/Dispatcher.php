@@ -1,17 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jshannon63\Psr15Middleware;
 
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class Dispatcher
 {
     public function __invoke(FoundationRequest $request, FoundationResponse $response, $middleware, ...$parameters)
     {
-        $psr7request = (new DiactorosFactory())->createRequest($request);
+        $psr17Factory = new Psr17Factory();
+        $psr7request = (new PsrHttpFactory(
+            $psr17Factory,
+            $psr17Factory,
+            $psr17Factory,
+            $psr17Factory
+        ))->createRequest($request);
 
         $requestHandler = new Handler($response);
 
@@ -31,15 +40,15 @@ class Dispatcher
 
     private function convertRequest($psr7request, $original)
     {
-        $foundation_request = (new HttpFoundationFactory())->createRequest($psr7request);
+        $foundationRequest = (new HttpFoundationFactory())->createRequest($psr7request);
 
-        $original->query = clone $foundation_request->query;
-        $original->request = clone $foundation_request->request;
-        $original->attributes = clone $foundation_request->attributes;
-        $original->cookies = clone $foundation_request->cookies;
-        $original->files = clone $foundation_request->files;
-        $original->server = clone $foundation_request->server;
-        $original->headers = clone $foundation_request->headers;
+        $original->query = clone $foundationRequest->query;
+        $original->request = clone $foundationRequest->request;
+        $original->attributes = clone $foundationRequest->attributes;
+        $original->cookies = clone $foundationRequest->cookies;
+        $original->files = clone $foundationRequest->files;
+        $original->server = clone $foundationRequest->server;
+        $original->headers = clone $foundationRequest->headers;
 
         return $original;
     }
@@ -55,7 +64,7 @@ class Dispatcher
         $original->setContent($foundation_response->getContent());
         $original->setProtocolVersion($foundation_response->getProtocolVersion());
         $original->setStatusCode($foundation_response->getStatusCode());
-        $original->setCharset($foundation_response->getCharset()?$foundation_response->getCharset():'');
+        $original->setCharset($foundation_response->getCharset() ?: '');
 
         return $original;
     }

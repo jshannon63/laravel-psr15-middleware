@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jshannon63\Psr15Middleware;
 
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Response as FoundationResponse;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -15,7 +18,13 @@ class Handler implements RequestHandlerInterface
 
     public function __construct(FoundationResponse $response)
     {
-        $this->response = (new DiactorosFactory())->createResponse($response);
+        $psr17Factory = new Psr17Factory();
+        $this->response = (new PsrHttpFactory(
+            $psr17Factory,
+            $psr17Factory,
+            $psr17Factory,
+            $psr17Factory
+        ))->createResponse($response);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

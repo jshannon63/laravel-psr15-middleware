@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jshannon63\Psr15Middleware;
 
 use Closure;
@@ -25,21 +27,23 @@ class Psr15Middleware
      */
     public function handle($request, Closure $next, ...$parameters)
     {
-        $dispatcher = new Dispatcher;
+        $dispatcher = new Dispatcher();
 
-        if ($this->mode == 'before') {
+        if ($this->mode === 'before') {
             // we must create a mock response object since PSR-15 requires it
             // but it is not truly available at this point in the request cycle.
             // so we will ignore it when returned.
             $messages = $dispatcher($request, (new \Symfony\Component\HttpFoundation\Response), $this->middleware, ...$parameters);
             return $next($messages['request']);
-        } elseif ($this->mode == 'after') {
+        }
+
+        if ($this->mode === 'after') {
             $response = $next($request);
             $messages = $dispatcher($request, $response, $this->middleware, ...$parameters);
             return $messages['response'];
-        } else {
-            return $next($request);
         }
+
+        return $next($request);
     }
 
     /**
@@ -50,11 +54,10 @@ class Psr15Middleware
      * @param [type] ...$parameters
      * @return void
      */
-    public function terminate($request, $response, ...$parameters)
+    public function terminate($request, $response, ...$parameters): void
     {
-        if ($this->mode == 'terminable') {
-            $dispatcher = new Dispatcher;
-            $dispatcher($request, $response, $this->middleware, ...$parameters);
+        if ($this->mode === 'terminable') {
+            (new Dispatcher())($request, $response, $this->middleware, ...$parameters);
         }
     }
 }

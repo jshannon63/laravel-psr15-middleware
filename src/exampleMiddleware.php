@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jshannon63\Psr15Middleware;
 
 use Psr\Http\Server\RequestHandlerInterface;

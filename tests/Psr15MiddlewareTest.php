@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
+require_once __DIR__.'/../src/Dispatcher.php';
+require_once __DIR__.'/../src/Handler.php';
+
 use Jshannon63\Psr15Middleware\Psr15Middleware;
-
-require_once __DIR__.'/../src/Psr15MiddlewareDispatcher.php';
-require_once __DIR__.'/../src/Psr15MiddlewareHandler.php';
-
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -86,41 +87,39 @@ class Psr15MiddlewareTest extends TestCase
     protected $container;
     protected $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->middleware = [
             'psr15middleware.middleware' => [
-                [\Tests\exampleMiddleware1::class, 'append', 'after'],
+                [exampleMiddleware1::class, 'append', 'after'],
                 [function () {
-                    return new \Tests\exampleMiddleware2();
+                    return new exampleMiddleware2();
                 }, 'append', 'after'],
-                [(new \Tests\exampleMiddleware3()), 'append', 'after'],
-                [(new \Tests\exampleMiddleware4()), 'append', 'after']
+                [(new exampleMiddleware3()), 'append', 'after'],
+                [(new exampleMiddleware4()), 'append', 'after']
             ]
         ];
         $this->container = new Container;
         $this->config = new Repository($this->middleware);
     }
 
-    public function test_middleware_stack()
+    public function test_middleware_stack(): void
     {
         $request = Request::create('http://localhost:8888/test/1', 'GET', [], [], [], [], null);
         $response = new Response('Original Content:', Response::HTTP_OK, ['content-type' => 'text/html']);
 
-        $middlewares = $this->config->get('psr15middleware.middleware');
-
-        foreach ($middlewares as $middleware) {
+        foreach ($this->config->get('psr15middleware.middleware') as $middleware) {
             $psr15middleware = new Psr15Middleware($middleware[0], $middleware[2]);
-            $response = $psr15middleware->handle($request, function () use ($response) {
+            $response = $psr15middleware->handle($request, static function () use ($response) {
                 return $response;
             });
         }
 
-        $this->assertContains('Original Content:', $response->getContent());
-        $this->assertContains('Test-1', $response->getContent());
-        $this->assertContains('Test-2', $response->getContent());
-        $this->assertContains('Test-3', $response->getContent());
-        $this->assertContains('Original Content:<h1>Test-1</h1><h1>Test-2</h1><h1>Test-3</h1>', $response->getContent());
+        $this->assertStringContainsString('Original Content:', $response->getContent());
+        $this->assertStringContainsString('Test-1', $response->getContent());
+        $this->assertStringContainsString('Test-2', $response->getContent());
+        $this->assertStringContainsString('Test-3', $response->getContent());
+        $this->assertStringContainsString('Original Content:<h1>Test-1</h1><h1>Test-2</h1><h1>Test-3</h1>', $response->getContent());
     }
 }
